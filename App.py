@@ -6,6 +6,10 @@ import hashlib
 from datetime import datetime
 import plotly.graph_objects as go
 from fpdf import FPDF
+import requests   
+
+
+API_URL = https://construction-risk-api-2.onrender.com
 
 st.set_page_config(
     page_title="ConstructIQ-KE",
