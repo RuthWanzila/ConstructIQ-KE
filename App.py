@@ -8,7 +8,7 @@ from fpdf import FPDF
 import requests   
 
 
-API_URL = https://construction-risk-api-2.onrender.com
+API_URL = "https://construction-risk-api-2.onrender.com/predict"
 
 st.set_page_config(
     page_title="ConstructIQ-KE",
