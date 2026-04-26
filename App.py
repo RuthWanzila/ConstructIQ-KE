@@ -16,13 +16,12 @@ st.set_page_config(
     layout="wide"
 )
 
-# ---------- MODERN STYLE ----------
+# ---------- STYLE ----------
 st.markdown("""
 <style>
-
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
 
-html, body, [class*="css"]  {
+html, body, [class*="css"] {
     font-family: 'Inter', sans-serif;
 }
 
@@ -52,12 +51,6 @@ div[data-testid="stForm"], .stDataFrame, .stMetric {
     color: white;
     border-radius: 10px;
     font-weight: 700;
-    padding: 0.6rem 1.2rem;
-    border: none;
-}
-
-.stButton>button:hover {
-    transform: scale(1.03);
 }
 
 </style>
@@ -109,12 +102,23 @@ def predict(d):
     payload = {
         "project_type": d['ptype'],
         "county": d['county'],
-        "planned_cost": d['cost'],
-        "duration": d['dur'],
-        "weather": d['weather'],
+        "planned_cost_kes": d['cost'],
+        "planned_duration_days": d['dur'],
+        "weather_condition": d['weather'],
+
+        # defaults required by backend
+        "temperature": 25,
+        "humidity": 60,
+        "accident_count": 0,
+        "labor_hours": 5000,
         "equipment_utilization": d['equip'],
+        "material_usage": 1000,
+        "safety_risk_score": 5,
+        "site_activity": "Medium",
         "visible_defects": d['defects'],
-        "unusual_event": d['unusual']
+        "structural_concern": "Pass",
+        "photo_progress_score": 50,
+        "unusual_event_reported": d['unusual']
     }
 
     try:
@@ -122,15 +126,15 @@ def predict(d):
 
         if r.status_code == 200:
             res = r.json()
-            return res["probability"], res["risk_level"], res["drivers"]
+            return res["probability"], res["risk_level"], res["reasons"]
 
-        return 0, "Error", ["API error response"]
+        return 0, "Error", [r.text]
 
     except Exception as e:
         return 0, "Error", [str(e)]
 
 # ---------- PDF ----------
-def pdf_report(name,county,ptype,prob,risk,reasons):
+def pdf_report(name,county,prob,risk,reasons):
     pdf = FPDF()
     pdf.add_page()
     pdf.set_font("Arial",'B',16)
@@ -158,40 +162,37 @@ if 'user' not in st.session_state:
 if not st.session_state.user:
 
     col1,col2,col3 = st.columns([1,2,1])
-    with col2:
 
+    with col2:
         st.markdown("## 🏗️ ConstructIQ-KE Login")
 
-        tab1, tab2 = st.tabs(["Login","Sign Up"])
+        t1,t2 = st.tabs(["Login","Sign Up"])
 
-        with tab1:
+        with t1:
             e = st.text_input("Email")
             p = st.text_input("Password", type="password")
 
-            if st.button("Sign In", use_container_width=True):
+            if st.button("Sign In"):
                 if login(e,p):
                     st.session_state.user = e
                     st.rerun()
                 else:
-                    st.error("Invalid login")
+                    st.error("Invalid credentials")
 
-        with tab2:
+        with t2:
             e2 = st.text_input("Email", key="e2")
             p2 = st.text_input("Password", type="password", key="p2")
 
-            if st.button("Create Account", use_container_width=True):
+            if st.button("Create Account"):
                 if signup(e2,p2):
                     st.success("Account created")
                 else:
-                    st.error("Account exists")
+                    st.error("User exists")
 
     st.stop()
 
 # ---------- HEADER ----------
 colA,colB,colC = st.columns([1,6,1])
-
-with colA:
-    st.markdown("### 🏗️")
 
 with colB:
     st.markdown("## ConstructIQ-KE Dashboard")
@@ -211,10 +212,12 @@ with st.form("f"):
     c1,c2 = st.columns(2)
 
     name = c1.text_input("Project Name")
-    county = c2.selectbox("County",['Nairobi','Mombasa','Kisumu','Nakuru','Uasin Gishu','Kiambu','Machakos','Kajiado'])
+    county = c2.selectbox("County",
+        ['Nairobi','Mombasa','Kisumu','Nakuru','Uasin Gishu','Kiambu','Machakos','Kajiado'])
+
     ptype = c1.selectbox("Project Type",["Building","Bridge","Dam","Road","Tunnel"])
-    cost = c2.number_input("Planned Cost (KES)", 1_000_000, value=500_000_000, step=1_000_000)
-    dur = c1.slider("Duration (days)", 90, 1200, 365)
+    cost = c2.number_input("Planned Cost (KES)",1_000_000,value=500_000_000,step=1_000_000)
+    dur = c1.slider("Duration (days)",90,1200,365)
     weather = c2.selectbox("Weather",["Sunny","Rainy","Cloudy","Stormy"])
     equip = c1.slider("Equipment Utilization %",0,100,70)
     defects = c2.selectbox("Visible Defects",["None","Minor","Major"])
@@ -263,12 +266,11 @@ if submitted and name:
         for r in reasons:
             st.write("•", r)
 
-    pdf = pdf_report(name,county,ptype,prob,risk,reasons)
+    pdf = pdf_report(name,county,prob,risk,reasons)
     st.download_button("📄 Download Report", pdf, f"{name}_ConstructIQ.pdf", "application/pdf")
 
-st.divider()
-
 # ---------- HISTORY ----------
+st.divider()
 st.subheader("📁 Recent Assessments")
 
 conn = sqlite3.connect('users.db')
