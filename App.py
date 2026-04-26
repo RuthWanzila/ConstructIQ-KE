@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-import joblib
 import sqlite3
 import hashlib
 from datetime import datetime
@@ -122,7 +121,7 @@ def login(e,p):
 def load_model():
     return joblib.load('abandonment_model.joblib'), joblib.load('model_features.joblib')
 
-model, FEATURES = load_model()
+
 
 ARCHETYPE = {'Nairobi':'Nairobi','Kiambu':'Nairobi','Mombasa':'Mombasa','Kisumu':'Kisumu','Nakuru':'Nakuru','Uasin Gishu':'Eldoret'}
 for c in ['Kwale','Kilifi','Siaya','Kakamega','Machakos','Kajiado','Turkana','Kitui']:
