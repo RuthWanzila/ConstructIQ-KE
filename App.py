@@ -118,7 +118,7 @@ def predict(d):
     }
 
     try:
-        r = requests.post(API_URL, json=payload, timeout=10)
+        r = requests.post(API_URL, json=payload, timeout=30)
 
         if r.status_code == 200:
             res = r.json()
