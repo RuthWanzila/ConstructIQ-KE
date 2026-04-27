@@ -59,7 +59,7 @@ div[data-testid="stForm"], .stDataFrame, .stMetric {
 # ---------- HERO ----------
 st.markdown("""
 # 🏗️ ConstructIQ-KE  
-### *AI-Powered Construction Risk Intelligence for Kenya*
+### *AI-Powered Construction Risk Intelligence*
 ---
 """)
 
