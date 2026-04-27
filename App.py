@@ -212,16 +212,7 @@ with st.form("f"):
     c1,c2 = st.columns(2)
 
     name = c1.text_input("Project Name")
-    county = c2.selectbox("County", [
-    "Baringo","Bomet","Bungoma","Busia","Elgeyo-Marakwet","Embu",
-    "Garissa","Homa Bay","Isiolo","Kajiado","Kakamega","Kericho",
-    "Kiambu","Kilifi","Kirinyaga","Kisii","Kisumu","Kitui",
-    "Kwale","Laikipia","Lamu","Machakos","Makueni","Mandera",
-    "Marsabit","Meru","Migori","Mombasa","Murang'a","Nairobi",
-    "Nakuru","Nandi","Narok","Nyamira","Nyandarua","Nyeri",
-    "Samburu","Siaya","Taita-Taveta","Tana River","Tharaka-Nithi",
-    "Trans Nzoia","Turkana","Uasin Gishu","Vihiga","Wajir","West Pokot"
-])
+    county = c2.selectbox("County",['Nairobi','Mombasa','Kisumu','Nakuru','Kiambu','Machakos','Kajiado'])
 
     ptype = c1.selectbox("Project Type",["Building","Bridge","Dam","Road","Tunnel"])
     cost = c2.number_input("Planned Cost (KES)",1_000_000,value=500_000_000,step=1_000_000)
